@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>わんちゃんの気持ちメーカー 🐾</title>
+<style>
+:root{
+  --ink:#1a1a1a;
+  --card: rgba(255,255,255,.94);
+  --radius:20px;
+  --shadow:0 20px 45px rgba(0,0,0,.25);
+}
+*{ box-sizing:border-box; }
+body{
+  margin:0;
+  font-family: system-ui, -apple-system, "Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",sans-serif;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(255,255,255,.45), transparent 40%),
+    radial-gradient(circle at 70% 25%, rgba(255,255,255,.35), transparent 45%),
+    linear-gradient(
+      to top,
+      #4caf50 0%,
+      #66bb6a 35%,
+      #81c784 55%,
+      #aed581 70%,
+      #dcedc8 90%,
+      #f1f8e9 100%
+    );
+}
+.wrap{ width:min(960px,100%); }
+.title{
+  text-align:center;
+  font-size:clamp(32px,5vw,48px);
+  font-weight:900;
+  margin-bottom:6px;
+}
+.sub{
+  text-align:center;
+  font-size:18px;
+  margin-bottom:18px;
+  font-weight:700;
+}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:20px;
+}
+.row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+}
+input, select{
+  padding:14px 18px;
+  font-size:18px;
+  border-radius:999px;
+  border:1px solid rgba(0,0,0,.15);
+  min-width:220px;
+}
+button{
+  padding:14px 26px;
+  font-size:18px;
+  border-radius:999px;
+  border:none;
+  background:#2e7d32;
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+}
+.result{
+  margin-top:20px;
+  display:none;
+}
+.photo img{
+  max-width:260px;
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.25);
+}
+.box{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+}
+.big{
+  font-size:clamp(22px,3.5vw,30px);
+  font-weight:900;
+  line-height:1.5;
+}
+.footer{
+  text-align:center;
+  margin-top:16px;
+  font-weight:800;
+  opacity:.85;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="title">わんちゃんの気持ちメーカー 🐾</h1>
+  <p class="sub">写真＋入力だけで、心の声が届きます</p>
+  <div class="card">
+    <div class="row">
+      <input id="breed" placeholder="犬種">
+      <input id="dogname" placeholder="名前">
+      <input id="age" type="number" placeholder="年齢">
+      <select id="family">
+        <option value="">ワンちゃんの立ち位置</option>
+        <option>母の下</option>
+        <option>父の下</option>
+        <option>娘の上</option>
+        <option>息子の上</option>
+        <option>家族の中心</option>
+        <option>末っ子</option>
+      </select>
+      <select id="you">
+        <option value="">あなたの立ち位置</option>
+        <option>母</option>
+        <option>父</option>
+        <option>娘</option>
+        <option>息子</option>
+        <option>家族</option>
+      </select>
+      <input id="photo" type="file" accept="image/*">
+      <button onclick="generate()">気持ちを聞く</button>
+    </div>
+    <div id="out" class="result"></div>
+  </div>
+  <div class="footer">🌱 今日も一緒に、いい一日を</div>
+</div>
+<script>
+const WANTS=["もっとなでてほしい","そばにいてほしい","声をかけてほしい","一緒にゆっくり過ごしたい"];
+const DO=["寄り道しながら散歩してほしい","名前を呼んでほしい","同じ目線で話してほしい","写真を撮ってほしい"];
+const TOGETHER=["これからも一緒に暮らしたい","ずっと家族でいたい","あなたがいるから安心できる"];
+function generate(){
+  const breed=v("breed"),name=v("dogname"),age=v("age"),family=v("family"),you=v("you");
+  if(!breed||!name||!age||!family||!you){alert("すべて入力してください");return;}
+  const seed=(breed+name+age+family+you).length;
+  const out=document.getElementById("out");
+  out.style.display="block";
+  out.innerHTML=`
+    <div class="photo" id="photoArea"></div>
+    <div class="box"><p class="big">🐕 ${name}の気持ち：${WANTS[seed%WANTS.length]}</p></div>
+    <div class="box"><p class="big">🫶 ${you}へ：${DO[(seed+1)%DO.length]}</p></div>
+    <div class="box"><p class="big">🏠 ${TOGETHER[(seed+2)%TOGETHER.length]}</p></div>
+  `;
+  const f=document.getElementById("photo").files[0];
+  if(f){
+    const img=document.createElement("img");
+    img.src=URL.createObjectURL(f);
+    document.getElementById("photoArea").appendChild(img);
+  }
+}
+function v(id){return document.getElementById(id).value.trim();}
+</script>
+</body>
+</html>
